@@ -7,10 +7,13 @@ var playerMoney = 10;
 var enemyName = 'Roborto';
 var enemyHealth = 50;
 
+var reward = 0;
 /* ----------------------------- End game result */
 var victory = () => {
+  reward = reward + Math.ceil(Math.random(1) * 10);
+  playerMoney = playerMoney + reward;
   alert(
-    `${playerName} has won! Remaining health ${playerHealth}, enemy health: ${enemyHealth}`
+    `${playerName} has won! Remaining health ${playerHealth}, enemy health: ${enemyHealth}. \nYou have been awarded ${reward} coins, you now have ${playerMoney} total coins.`
   );
   victor = playerName;
 };
@@ -76,6 +79,8 @@ while (playerHealth > 0 || enemyHealth > 0) {
 
     if (action == 'fight') {
       fight();
+    } else {
+      alert('Please choose a valid option');
     }
   }
 }
@@ -84,7 +89,7 @@ while (playerHealth > 0 || enemyHealth > 0) {
 var header = document.getElementById('header');
 if (enemyHealth <= 0) {
   header.style.color = 'green';
-  header.innerText = `${playerName} has won! Remaining health ${playerHealth}, enemy health: ${enemyHealth}`;
+  header.innerText = `${playerName} has won! Remaining health ${playerHealth}, enemy health: ${enemyHealth}. \nYou have been awarded ${reward} coins, you now have ${playerMoney} total coins.`;
 }
 if (playerHealth <= 0) {
   header.style.color = 'red';
