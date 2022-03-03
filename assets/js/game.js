@@ -77,6 +77,10 @@ const shop = () => {
   if (shopOffers == 'nothing') {
     console.log('Chosen to go back');
   }
+
+  // How to update player attack when it's being in another block?
+  // Just create a variable here to hold the bonus damage and then add that variable to the bottom lines
+  // "var playerAttack = Math.ceil(Math.random(1) * 10) + extraAttack"
 };
 
 /* ----------------------------- Main Execution */
