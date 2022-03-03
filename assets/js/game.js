@@ -17,55 +17,66 @@ var victory = () => {
 
 var defeat = () => {
   alert(
-    `${enemyName} has won! Remaining health ${enemyHealth}, enemy health: ${enemyHealth}`
+    `${enemyName} has won! Remaining health ${enemyHealth}, player health: ${playerHealth}`
   );
   victor = enemyName;
 };
 
-/* ----------------------------- Main Execution */
-while (playerHealth > 0 || enemyHealth > 0) {
-  var enemyAttack = Math.ceil(Math.random(1) * 20);
-  var playerAttack = Math.ceil(Math.random(1) * 20);
+/* ----------------------------- Action paths */
+const fight = () => {
+  enemyHealth = enemyHealth - playerAttack;
+  playerHealth = playerHealth - enemyAttack;
 
-  if (playerHealth < 1 || enemyHealth < 1) {
-    break;
+  if (playerHealth <= 0) {
+    playerHealth = 0;
+    defeat();
   }
 
-  var action = prompt(
-    `Would you like to "Fight" or "Skip" (5 Coins)\n\nPlayer health: ${playerHealth} - Coins: ${playerMoney}`
-  ).toLowerCase();
-
-  if (action == 'skip') {
-    if (playerMoney < 1) {
-      alert('Cannot skip, not enough funds');
-    } else {
-      prev = playerMoney;
-      playerMoney = playerMoney - 5;
-      alert(
-        `Player has chosen to SKIP, player money deducted from ${prev} to ${playerMoney}`
-      );
-    }
+  if (enemyHealth <= 0) {
+    enemyHealth = 0;
+    victory();
   }
 
-  if (action == 'fight') {
-    enemyHealth = enemyHealth - playerAttack;
-    playerHealth = playerHealth - enemyAttack;
-
-    if (playerHealth <= 0) {
-      playerHealth = 0;
-      defeat();
-      break;
-    }
-
-    if (enemyHealth <= 0) {
-      enemyHealth = 0;
-      victory();
-      break;
-    }
-
+  if (enemyHealth > 1 && playerHealth > 1) {
     alert(
       `Player has chosen to FIGHT, \n${playerName} attacks ${enemyName} for ${playerAttack}. \n${enemyName} attacks ${playerName} for ${enemyAttack}\n\nCurrent health: ${playerName}: ${playerHealth}  -  ${enemyName}: ${enemyHealth} `
     );
+  }
+};
+
+const skip = () => {
+  if (playerMoney < 1) {
+    alert('Cannot skip, not enough funds');
+  } else {
+    prev = playerMoney;
+    playerMoney = playerMoney - 5;
+    alert(
+      `Player has chosen to SKIP, player money deducted from ${prev} to ${playerMoney}`
+    );
+  }
+};
+
+/* ----------------------------- Main Execution */
+while (playerHealth > 0 || enemyHealth > 0) {
+  // Upon each loop, generate a random number
+  var enemyAttack = Math.ceil(Math.random(1) * 10);
+  var playerAttack = Math.ceil(Math.random(1) * 10);
+
+  if (playerHealth < 1 || enemyHealth < 1) {
+    // While loop break condition
+    break;
+  } else {
+    var action = prompt(
+      `Would you like to "Fight" or "Skip" (5 Coins)\n\nPlayer health: ${playerHealth} - Coins: ${playerMoney}`
+    ).toLowerCase();
+
+    if (action == 'skip') {
+      skip();
+    }
+
+    if (action == 'fight') {
+      fight();
+    }
   }
 }
 
