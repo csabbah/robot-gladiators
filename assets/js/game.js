@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 /* ----------------------------- Intro and variable declarations */
+=======
+>>>>>>> main
 alert('Welcome to Robot Gladiators!');
 var playerName = prompt('Choose your robot name:').toUpperCase();
 var playerHealth = 100;
@@ -7,7 +10,10 @@ var playerMoney = 10;
 var enemyName = 'Roborto';
 var enemyHealth = 50;
 
+<<<<<<< HEAD
 /* ----------------------------- End game result */
+=======
+>>>>>>> main
 var victory = () => {
   alert(
     `${playerName} has won! Remaining health ${playerHealth}, enemy health: ${enemyHealth}`
@@ -22,7 +28,10 @@ var defeat = () => {
   victor = enemyName;
 };
 
+<<<<<<< HEAD
 /* ----------------------------- Main Execution */
+=======
+>>>>>>> main
 while (playerHealth > 0 || enemyHealth > 0) {
   var enemyAttack = Math.ceil(Math.random(1) * 20);
   var playerAttack = Math.ceil(Math.random(1) * 20);
@@ -69,7 +78,10 @@ while (playerHealth > 0 || enemyHealth > 0) {
   }
 }
 
+<<<<<<< HEAD
 /* ----------------------------- HTML header */
+=======
+>>>>>>> main
 var header = document.getElementById('header');
 if (enemyHealth <= 0) {
   header.style.color = 'green';
