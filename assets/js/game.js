@@ -1,38 +1,58 @@
 /* ----------------------------- Intro and variable declarations */
 alert('Welcome to Robot Gladiators!');
 
-var playerInfo = {
-  name: prompt('Choose your robot name:'),
-  health: 100,
-  money: 10,
-  battlesWon: 0,
-};
+while (true) {
+  var playerInfo = {
+    name: prompt('Choose your robot name:'),
+    health: 100,
+    money: 20,
+    attack: 0,
+    battlesWon: 0,
+    extraDamage: 0,
+    refillHealth: function () {
+      this.health += 20;
+      this.money -= 10;
+    },
+    increaseAttack: function () {
+      this.extraDamage += 10;
+      this.money -= 10;
+    },
+  };
 
-var extraDamage = 0;
-var randomEnemyHealth = Math.ceil(Math.random(20) * 60);
-var randomReward = Math.ceil(Math.random(5) * 20);
+  if (playerInfo.name == '' || playerInfo.name == null) {
+    alert('Please enter a valid name');
+  } else {
+    break;
+  }
+}
+
+// Main RNG element function
+function randomNum(min, max) {
+  number = Math.ceil(Math.random(min) * max);
+  return number;
+}
 
 // Establish the initial values
 var enemies = [
   {
     name: 'Ego',
-    health: randomEnemyHealth,
-    victoryReward: randomReward,
+    health: randomNum(20, 60),
+    victoryReward: randomNum(5, 20),
   },
   {
     name: 'Thanos',
-    health: randomEnemyHealth,
-    victoryReward: randomReward,
+    health: randomNum(20, 70),
+    victoryReward: randomNum(5, 20),
   },
   {
     name: 'Blade',
-    health: randomEnemyHealth,
-    victoryReward: randomReward,
+    health: randomNum(20, 80),
+    victoryReward: randomNum(5, 20),
   },
   {
     name: 'Muzan',
-    health: randomEnemyHealth,
-    victoryReward: randomReward,
+    health: randomNum(20, 90),
+    victoryReward: randomNum(5, 20),
   },
 ];
 
@@ -42,13 +62,12 @@ var enemyChosen = false;
 
 /* ----------------------------- End game results */
 var victory = () => {
-  reward = reward + Math.ceil(Math.random(1) * 10);
-  playerInfo.money = playerInfo.money + reward;
+  playerInfo.money =
+    playerInfo.money + enemies[pickRandomEnemy]['victoryReward'];
   alert(
-    `${playerInfo.name} has won! Remaining health ${playerInfo.health}\n\nYou have been awarded ${reward} coins, you now have ${playerInfo.money} total coins.\nEntering the shop...`
+    `${playerInfo.name} has won! Remaining health ${playerInfo.health}\n\nYou have been awarded ${enemies[pickRandomEnemy]['victoryReward']} coins, you now have ${playerInfo.money} total coins.\nEntering the shop...`
   );
   shop();
-  victor = playerInfo.name;
   playerInfo.battlesWon += 1;
 };
 
@@ -56,32 +75,67 @@ var defeat = () => {
   alert(
     `${enemies[pickRandomEnemy]['name']} has won! Remaining health ${enemies[pickRandomEnemy]['health']}`
   );
-  victor = enemies[pickRandomEnemy]['name'];
 };
 
 /* ----------------------------- Action paths */
 const fight = () => {
-  playerDamage = playerAttack + extraDamage;
-
-  enemies[pickRandomEnemy]['health'] =
-    enemies[pickRandomEnemy]['health'] - playerDamage;
-
-  if (enemies[pickRandomEnemy]['health'] < 1) {
-    enemies[pickRandomEnemy]['health'] = 0;
-    victory();
+  // Decide who attacks first
+  var isPlayerTurn = true;
+  if (Math.random() > 0.5) {
+    var isPlayerTurn = false;
   }
 
-  playerInfo.health = playerInfo.health - enemyAttack;
+  while (enemies[pickRandomEnemy]['health'] > 1 && playerInfo.health > 1) {
+    if (isPlayerTurn) {
+      alert('Players turn!');
+      var action = prompt(
+        `Would you like to "Fight" or "Skip" (5 Coins) and open shop?\n\nPlayer health: ${playerInfo.health} - Coins: ${playerInfo.money}`
+      ).toLowerCase();
 
-  if (playerInfo.health < 1) {
-    playerInfo.health = 0;
-    defeat();
-  }
+      if (action == 'skip') {
+        skip();
+        break;
+      } else if (action == 'fight') {
+        // -------- Player attacks first then we test the condition...
+        playerInfo.attack = randomNum(1, 10) + playerInfo.extraDamage;
 
-  if (enemies[pickRandomEnemy]['health'] > 1 && playerInfo.health > 1) {
-    alert(
-      `Player has chosen to FIGHT, \n${playerInfo.name} attacks ${enemies[pickRandomEnemy]['name']} for ${playerDamage}. \n${enemies[pickRandomEnemy]['name']} attacks ${playerInfo.name} for ${enemyAttack}\n\nCurrent health: ${playerInfo.name}: ${playerInfo.health}  -  ${enemies[pickRandomEnemy]['name']}: ${enemies[pickRandomEnemy]['health']} `
-    );
+        alert(
+          `Player has chosen to FIGHT, \n${playerInfo.name} attacks ${enemies[pickRandomEnemy]['name']} for ${playerInfo.attack}.\n${enemies[pickRandomEnemy]['name']} now has ${enemies[pickRandomEnemy]['health']} health!`
+        );
+
+        enemies[pickRandomEnemy]['health'] =
+          enemies[pickRandomEnemy]['health'] - playerInfo.attack;
+
+        if (enemies[pickRandomEnemy]['health'] < 1) {
+          enemies[pickRandomEnemy]['health'] = 0;
+          victory();
+          break;
+        } else {
+          alert(
+            `${enemies[pickRandomEnemy]['name']} is still alive, they attack next...`
+          );
+        }
+      } else if (action == '' || action == null) {
+        alert('Please choose a valid option');
+      }
+    } else {
+      alert("Enemy's turn!");
+      // -------- If the enemy doesn't lose, then we move on with their attack
+      var enemyAttack = randomNum(1, 10);
+
+      playerInfo.health = playerInfo.health - enemyAttack;
+      alert(
+        `${enemies[pickRandomEnemy]['name']} attacks ${playerInfo.name} for ${enemyAttack}.\n${playerInfo.name} now has ${playerInfo.health} health!`
+      );
+      if (playerInfo.health < 1) {
+        playerInfo.health = 0;
+        defeat();
+        break;
+      } else {
+        alert(`${playerInfo.name} is still alive, they attack next...`);
+      }
+    }
+    isPlayerTurn = !isPlayerTurn;
   }
 };
 
@@ -97,8 +151,7 @@ const shop = () => {
       if (playerInfo.money >= 10) {
         prevMoney = playerInfo.money;
         prevHealth = playerInfo.health;
-        playerInfo.money = playerInfo.money - 10;
-        playerInfo.health = playerInfo.health + 15;
+        playerInfo.refillHealth();
         shopOffers == '';
         alert(
           `Purchase successful, ${prevHealth} > ${playerInfo.health}. Player money deducted from ${prevMoney} to ${playerInfo.money}`
@@ -109,8 +162,7 @@ const shop = () => {
     } else if (shopOffers == 'a') {
       if (playerInfo.money >= 10) {
         prevMoney = playerInfo.money;
-        playerInfo.money = playerInfo.money - 10;
-        extraDamage = extraDamage + 5;
+        playerInfo.increaseAttack();
         shopOffers == '';
         alert(
           `Purchase successful! Player money deducted from ${prevMoney} to ${playerInfo.money}`
@@ -131,29 +183,26 @@ const skip = () => {
     prev = playerInfo.money;
     playerInfo.money = playerInfo.money - 5;
     alert(
-      `Player has chosen to SKIP, player money deducted from ${prev} to ${playerInfo.money}`
+      `Player has chosen to SKIP, player money deducted from ${prev} to ${playerInfo.money} Loading shop...`
     );
   }
+  shop();
 };
 
 /* ----------------------------- Main Execution */
 while (playerInfo.health > 0 || enemies[pickRandomEnemy]['health'] > 0) {
   // Pick a random enemy from the list
   if (!enemyChosen) {
-    pickRandomEnemy = Math.ceil(Math.random(1) * 4) - 1;
+    pickRandomEnemy = randomNum(1, 4) - 1;
     enemyChosen = true;
   }
-
-  // Upon each loop, generate a random number
-  var enemyAttack = Math.ceil(Math.random(1) * 10);
-  var playerAttack = Math.ceil(Math.random(1) * 10);
 
   if (enemies[pickRandomEnemy]['health'] == 0) {
     nextPath = prompt("'Continue' to the next battle or 'stop'?").toLowerCase();
     if (nextPath == 'continue') {
-      difficultyIncrement = difficultyIncrement + 0.1;
+      difficultyIncrement = difficultyIncrement + 0.2;
       enemies[pickRandomEnemy]['health'] = Math.ceil(
-        randomEnemyHealth * difficultyIncrement
+        randomNum(20, 60) * difficultyIncrement
       ); // Each time we progress, slowly increment by a factor of * 1 each time
       nextPath = ''; // Reset next path value
       enemyChosen = false; // Set to false so we can execute a random enemy again
@@ -166,17 +215,7 @@ while (playerInfo.health > 0 || enemies[pickRandomEnemy]['health'] > 0) {
   } else if (playerInfo.health == 0) {
     break;
   } else {
-    var action = prompt(
-      `Would you like to "Fight", "Skip" (5 Coins)?\n\nPlayer health: ${playerInfo.health} - Coins: ${playerInfo.money}`
-    ).toLowerCase();
-
-    if (action == 'skip') {
-      skip();
-    } else if (action == 'fight') {
-      fight();
-    } else {
-      alert('Please choose a valid option');
-    }
+    fight();
   }
 }
 
