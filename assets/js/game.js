@@ -152,7 +152,7 @@ while (playerHealth > 0 || enemies[pickRandomEnemy]['health'] > 0) {
 
   // Upon each loop, generate a random number
   var enemyAttack = Math.ceil(Math.random(1) * 10);
-  var playerAttack = Math.ceil(Math.random(1) * 20);
+  var playerAttack = Math.ceil(Math.random(1) * 10);
 
   if (enemies[pickRandomEnemy]['health'] == 0) {
     nextPath = prompt("'Continue' to the next battle or 'stop'?").toLowerCase();
