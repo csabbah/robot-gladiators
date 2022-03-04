@@ -50,8 +50,9 @@ var victory = () => {
   reward = reward + Math.ceil(Math.random(1) * 10);
   playerMoney = playerMoney + reward;
   alert(
-    `${playerName} has won! Remaining health ${playerHealth}\n\nYou have been awarded ${reward} coins, you now have ${playerMoney} total coins.`
+    `${playerName} has won! Remaining health ${playerHealth}\n\nYou have been awarded ${reward} coins, you now have ${playerMoney} total coins.\nEntering the shop...`
   );
+  shop();
   victor = playerName;
   enemiesBeaten += 1;
 };
@@ -90,37 +91,42 @@ const fight = () => {
 };
 
 const shop = () => {
-  shopOffers = prompt(
-    `What would you like to buy? Coins: ${playerMoney} \n ------------------------------- \n"H": +15 Health/10 Coins \n"A": +5 Attack power/10 coins\n"Nothing"`
-  ).toLowerCase();
+  while (true) {
+    shopOffers = prompt(
+      `What would you like to buy? Coins: ${playerMoney} \n ------------------------------- \n"H": +15 Health/10 Coins \n"A": +5 Attack power/10 coins\n"Nothing"`
+    ).toLowerCase();
 
-  if (shopOffers == 'nothing') {
-    console.log('Chosen to go back');
-  } else if (shopOffers == 'h') {
-    if (playerMoney >= 10) {
-      prevMoney = playerMoney;
-      prevHealth = playerHealth;
-      playerMoney = playerMoney - 10;
-      playerHealth = playerHealth + 15;
-      alert(
-        `Purchase successful, ${prevHealth} > ${playerHealth}. Player money deducted from ${prevMoney} to ${playerMoney}`
-      );
+    if (shopOffers == 'nothing') {
+      console.log('Chosen to go back');
+      break;
+    } else if (shopOffers == 'h') {
+      if (playerMoney >= 10) {
+        prevMoney = playerMoney;
+        prevHealth = playerHealth;
+        playerMoney = playerMoney - 10;
+        playerHealth = playerHealth + 15;
+        shopOffers == '';
+        alert(
+          `Purchase successful, ${prevHealth} > ${playerHealth}. Player money deducted from ${prevMoney} to ${playerMoney}`
+        );
+      } else {
+        alert('Not enough coins!');
+      }
+    } else if (shopOffers == 'a') {
+      if (playerMoney >= 10) {
+        prevMoney = playerMoney;
+        playerMoney = playerMoney - 10;
+        extraDamage = extraDamage + 5;
+        shopOffers == '';
+        alert(
+          `Purchase successful! Player money deducted from ${prevMoney} to ${playerMoney}`
+        );
+      } else {
+        alert('Not enough coins!');
+      }
     } else {
-      alert('Not enough coins!');
+      alert('Please choose a valid option');
     }
-  } else if (shopOffers == 'a') {
-    if (playerMoney >= 10) {
-      prevMoney = playerMoney;
-      playerMoney = playerMoney - 10;
-      extraDamage = extraDamage + 5;
-      alert(
-        `Purchase successful! Player money deducted from ${prevMoney} to ${playerMoney}`
-      );
-    } else {
-      alert('Not enough coins!');
-    }
-  } else {
-    alert('Please choose a valid option');
   }
 };
 
@@ -167,15 +173,13 @@ while (playerHealth > 0 || enemies[pickRandomEnemy]['health'] > 0) {
     break;
   } else {
     var action = prompt(
-      `Would you like to "Fight", "Skip" (5 Coins) or visit the "Shop"?\n\nPlayer health: ${playerHealth} - Coins: ${playerMoney}`
+      `Would you like to "Fight", "Skip" (5 Coins)?\n\nPlayer health: ${playerHealth} - Coins: ${playerMoney}`
     ).toLowerCase();
 
     if (action == 'skip') {
       skip();
     } else if (action == 'fight') {
       fight();
-    } else if (action == 'shop') {
-      shop();
     } else {
       alert('Please choose a valid option');
     }
