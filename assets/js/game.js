@@ -99,12 +99,11 @@ const fight = () => {
         // -------- Player attacks first then we test the condition...
         playerInfo.attack = randomNum(1, 10) + playerInfo.extraDamage;
 
+        enemies[pickRandomEnemy]['health'] =
+          enemies[pickRandomEnemy]['health'] - playerInfo.attack;
         alert(
           `Player has chosen to FIGHT, \n${playerInfo.name} attacks ${enemies[pickRandomEnemy]['name']} for ${playerInfo.attack}.\n${enemies[pickRandomEnemy]['name']} now has ${enemies[pickRandomEnemy]['health']} health!`
         );
-
-        enemies[pickRandomEnemy]['health'] =
-          enemies[pickRandomEnemy]['health'] - playerInfo.attack;
 
         if (enemies[pickRandomEnemy]['health'] < 1) {
           enemies[pickRandomEnemy]['health'] = 0;
