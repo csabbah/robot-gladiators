@@ -60,7 +60,7 @@ var difficultyIncrement = 1;
 var reward = 0;
 var enemyChosen = false;
 
-/* ----------------------------- End game results */
+/* ----------------------------- End game results (alert)*/
 var victory = () => {
   playerInfo.money =
     playerInfo.money + enemies[pickRandomEnemy]['victoryReward'];
@@ -75,6 +75,49 @@ var defeat = () => {
   alert(
     `${enemies[pickRandomEnemy]['name']} has won! Remaining health ${enemies[pickRandomEnemy]['health']}`
   );
+};
+
+/* ----------------- End game results (HTML header) */
+const finalResults = () => {
+  if (playerInfo.health == 0) {
+    const header = document.getElementById('header');
+    header.style.color = 'red';
+    header.innerText = `You lose to ${enemies[pickRandomEnemy]['name']}! You beat ${playerInfo.battlesWon} enemies with ${playerInfo.money} coins remaining.`;
+    saveCheckScore();
+  }
+  if (enemies[pickRandomEnemy]['health'] == 0) {
+    const header = document.getElementById('header');
+    header.style.color = 'green';
+    header.innerText = `${playerInfo.name} has won and ended the battle! \nRemaining health ${playerInfo.health}\nTotal coins: ${playerInfo.money}\nTotal enemies beaten ${playerInfo.battlesWon}`;
+    saveCheckScore();
+  }
+};
+
+/* ----------------------------- Save score to local stoage */
+const saveCheckScore = () => {
+  // Check if the score exists in local
+  var highScore = localStorage.getItem('highscore');
+  if (highScore === null) {
+    // If it doesn't, the current highscore is 0 < We need a value so we
+    // can run the conditional statement below
+    highScore = 0;
+  }
+
+  if (playerInfo.money > highScore) {
+    localStorage.setItem('highscore', playerInfo.money);
+    localStorage.setItem('name', playerInfo.name);
+
+    alert(
+      playerInfo.name + ' now has the high score of ' + playerInfo.money + '!'
+    );
+  } else {
+    alert(
+      playerInfo.name +
+        ' did not beat the high score of ' +
+        highScore +
+        '. Maybe next time!'
+    );
+  }
 };
 
 /* ----------------------------- Action paths */
@@ -97,7 +140,7 @@ const fight = () => {
         break;
       } else if (action == 'fight') {
         // -------- Player attacks first then we test the condition...
-        playerInfo.attack = randomNum(1, 10) + playerInfo.extraDamage;
+        playerInfo.attack = randomNum(49, 90) + playerInfo.extraDamage;
 
         enemies[pickRandomEnemy]['health'] =
           enemies[pickRandomEnemy]['health'] - playerInfo.attack;
@@ -207,6 +250,7 @@ while (playerInfo.health > 0 || enemies[pickRandomEnemy]['health'] > 0) {
       enemyChosen = false; // Set to false so we can execute a random enemy again
     } else if (nextPath == 'stop') {
       // While loop break condition
+      finalResults();
       break;
     } else {
       alert('Please choose a valid option');
@@ -216,16 +260,4 @@ while (playerInfo.health > 0 || enemies[pickRandomEnemy]['health'] > 0) {
   } else {
     fight();
   }
-}
-
-/* ----------------------------- HTML end game labels */
-if (playerInfo.health == 0) {
-  const header = document.getElementById('header');
-  header.style.color = 'red';
-  header.innerText = `You lose to ${enemies[pickRandomEnemy]['name']}! You beat ${playerInfo.battlesWon} enemies with ${playerInfo.money} coins remaining.`;
-}
-if (enemies[pickRandomEnemy]['health'] == 0) {
-  const header = document.getElementById('header');
-  header.style.color = 'green';
-  header.innerText = `${playerInfo.name} has won and ended the battle! \nRemaining health ${playerInfo.health}\nTotal coins: ${playerInfo.money}\nTotal enemies beaten ${playerInfo.battlesWon}`;
 }
