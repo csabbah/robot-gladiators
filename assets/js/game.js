@@ -1,28 +1,56 @@
 /* ----------------------------- Intro and variable declarations */
 alert('Welcome to Robot Gladiators!');
-var playerName = prompt('Choose your robot name:').toUpperCase();
+
+while (true) {
+  var playerName = prompt('Choose your robot name:').toUpperCase();
+  if (playerName.length < 1) {
+    alert('Please choose a robot name.');
+  } else {
+    break;
+  }
+}
+
 var playerHealth = 100;
+var extraDamage = 0;
 var playerMoney = 10;
 var enemiesBeaten = 0;
+var randomEnemyHealth = Math.ceil(Math.random(20) * 60);
+var randomReward = Math.ceil(Math.random(5) * 20);
 
+// Establish the initial values
 var enemies = [
-  { name: 'Ego', health: 30, victoryReward: Math.ceil(Math.random(1) * 10) },
-  { name: 'Thanos', health: 60, victoryReward: Math.ceil(Math.random(1) * 20) },
-  { name: 'Blade', health: 40, victoryReward: Math.ceil(Math.random(1) * 15) },
-  { name: 'Muzan', health: 100, victoryReward: Math.ceil(Math.random(1) * 40) },
+  {
+    name: 'Ego',
+    health: randomEnemyHealth,
+    victoryReward: randomReward,
+  },
+  {
+    name: 'Thanos',
+    health: randomEnemyHealth,
+    victoryReward: randomReward,
+  },
+  {
+    name: 'Blade',
+    health: randomEnemyHealth,
+    victoryReward: randomReward,
+  },
+  {
+    name: 'Muzan',
+    health: randomEnemyHealth,
+    victoryReward: randomReward,
+  },
 ];
-var enemyName = 'Roborto';
-var enemyHealth = 50;
-
+var original = [...enemies];
+var difficultyIncrement = 1;
 var reward = 0;
 var enemyChosen = false;
 
-/* ----------------------------- End game result */
+/* ----------------------------- End game results */
 var victory = () => {
   reward = reward + Math.ceil(Math.random(1) * 10);
   playerMoney = playerMoney + reward;
   alert(
-    `${playerName} has won! Remaining health ${playerHealth}\nYou have been awarded ${reward} coins, you now have ${playerMoney} total coins.`
+    `${playerName} has won! Remaining health ${playerHealth}\n\nYou have been awarded ${reward} coins, you now have ${playerMoney} total coins.`
   );
   victor = playerName;
   enemiesBeaten += 1;
@@ -37,24 +65,62 @@ var defeat = () => {
 
 /* ----------------------------- Action paths */
 const fight = () => {
+  playerDamage = playerAttack + extraDamage;
+
   enemies[pickRandomEnemy]['health'] =
-    enemies[pickRandomEnemy]['health'] - playerAttack;
-  playerHealth = playerHealth - enemyAttack;
+    enemies[pickRandomEnemy]['health'] - playerDamage;
 
-  if (playerHealth <= 0) {
-    playerHealth = 0;
-    defeat();
-  }
-
-  if (enemies[pickRandomEnemy]['health'] <= 0) {
+  if (enemies[pickRandomEnemy]['health'] < 1) {
     enemies[pickRandomEnemy]['health'] = 0;
     victory();
   }
 
+  playerHealth = playerHealth - enemyAttack;
+
+  if (playerHealth < 1) {
+    playerHealth = 0;
+    defeat();
+  }
+
   if (enemies[pickRandomEnemy]['health'] > 1 && playerHealth > 1) {
     alert(
-      `Player has chosen to FIGHT, \n${playerName} attacks ${enemies[pickRandomEnemy]['name']} for ${playerAttack}. \n${enemies[pickRandomEnemy]['name']} attacks ${playerName} for ${enemyAttack}\n\nCurrent health: ${playerName}: ${playerHealth}  -  ${enemies[pickRandomEnemy]['name']}: ${enemies[pickRandomEnemy]['health']} `
+      `Player has chosen to FIGHT, \n${playerName} attacks ${enemies[pickRandomEnemy]['name']} for ${playerDamage}. \n${enemies[pickRandomEnemy]['name']} attacks ${playerName} for ${enemyAttack}\n\nCurrent health: ${playerName}: ${playerHealth}  -  ${enemies[pickRandomEnemy]['name']}: ${enemies[pickRandomEnemy]['health']} `
     );
+  }
+};
+
+const shop = () => {
+  shopOffers = prompt(
+    `What would you like to buy? Coins: ${playerMoney} \n ------------------------------- \n"H": +15 Health/10 Coins \n"A": +5 Attack power/10 coins\n"Nothing"`
+  ).toLowerCase();
+
+  if (shopOffers == 'nothing') {
+    console.log('Chosen to go back');
+  } else if (shopOffers == 'h') {
+    if (playerMoney >= 10) {
+      prevMoney = playerMoney;
+      prevHealth = playerHealth;
+      playerMoney = playerMoney - 10;
+      playerHealth = playerHealth + 15;
+      alert(
+        `Purchase successful, ${prevHealth} > ${playerHealth}. Player money deducted from ${prevMoney} to ${playerMoney}`
+      );
+    } else {
+      alert('Not enough coins!');
+    }
+  } else if (shopOffers == 'a') {
+    if (playerMoney >= 10) {
+      prevMoney = playerMoney;
+      playerMoney = playerMoney - 10;
+      extraDamage = extraDamage + 5;
+      alert(
+        `Purchase successful! Player money deducted from ${prevMoney} to ${playerMoney}`
+      );
+    } else {
+      alert('Not enough coins!');
+    }
+  } else {
+    alert('Please choose a valid option');
   }
 };
 
@@ -70,19 +136,6 @@ const skip = () => {
   }
 };
 
-const shop = () => {
-  shopOffers = prompt(
-    'What would you like to buy?:\n5 coins: +10 Health\n10 coins: +5 Attack power\n25 coins: Instant Kill current enemy \n"Nothing"'
-  ).toLowerCase();
-  if (shopOffers == 'nothing') {
-    console.log('Chosen to go back');
-  }
-
-  // How to update player attack when it's being in another block?
-  // Just create a variable here to hold the bonus damage and then add that variable to the bottom lines
-  // "var playerAttack = Math.ceil(Math.random(1) * 10) + extraAttack"
-};
-
 /* ----------------------------- Main Execution */
 while (playerHealth > 0 || enemies[pickRandomEnemy]['health'] > 0) {
   // Pick a random enemy from the list
@@ -93,21 +146,25 @@ while (playerHealth > 0 || enemies[pickRandomEnemy]['health'] > 0) {
 
   // Upon each loop, generate a random number
   var enemyAttack = Math.ceil(Math.random(1) * 10);
-  var playerAttack = Math.ceil(Math.random(1) * 10);
+  var playerAttack = Math.ceil(Math.random(1) * 40);
 
-  // ***************** PROBLEM - WHEN BOTH PLAYER AND ENEMY HIT 0 HEALTH OR -1, FIND A SOLUTION? LIKE,
-  // IF THE ENEMY DIES 'FIRST', THEN THE PLAYER WINS, MAYBE IT AS A TURN BASED GAME?
-  if (playerHealth < 1 || enemies[pickRandomEnemy]['health'] < 1) {
+  if (enemies[pickRandomEnemy]['health'] == 0) {
     nextPath = prompt("'Continue' to the next battle or 'stop'?").toLowerCase();
     if (nextPath == 'continue') {
-      enemyChosen = false;
-      nextPath = '';
+      difficultyIncrement = difficultyIncrement + 0.1;
+      enemies[pickRandomEnemy]['health'] = Math.ceil(
+        randomEnemyHealth * difficultyIncrement
+      ); // Each time we progress, slowly increment by a factor of * 1 each time
+      nextPath = ''; // Reset next path value
+      enemyChosen = false; // Set to false so we can execute a random enemy again
     } else if (nextPath == 'stop') {
       // While loop break condition
       break;
     } else {
       alert('Please choose a valid option');
     }
+  } else if (playerHealth == 0) {
+    break;
   } else {
     var action = prompt(
       `Would you like to "Fight", "Skip" (5 Coins) or visit the "Shop"?\n\nPlayer health: ${playerHealth} - Coins: ${playerMoney}`
@@ -125,13 +182,14 @@ while (playerHealth > 0 || enemies[pickRandomEnemy]['health'] > 0) {
   }
 }
 
-/* ----------------------------- HTML header */
-var header = document.getElementById('header');
-if (enemies[pickRandomEnemy]['health'] <= 0) {
+/* ----------------------------- HTML end game labels */
+if (playerHealth == 0) {
+  const header = document.getElementById('header');
+  header.style.color = 'red';
+  header.innerText = `You lose to ${enemies[pickRandomEnemy]['name']}! You beat ${enemiesBeaten} enemies with ${playerMoney} coins remaining.`;
+}
+if (enemies[pickRandomEnemy]['health'] == 0) {
+  const header = document.getElementById('header');
   header.style.color = 'green';
   header.innerText = `${playerName} has won and ended the battle! Remaining health ${playerHealth}\nTotal coins: ${playerMoney}\nTotal enemies beaten ${enemiesBeaten}`;
-}
-if (playerHealth <= 0) {
-  header.style.color = 'red';
-  header.innerText = `You lose!`;
 }
