@@ -135,7 +135,7 @@ const fight = () => {
         break;
       } else if (action == 'fight') {
         // -------- Player attacks first then we test the condition...
-        playerInfo.attack = randomNum(49, 90) + playerInfo.extraDamage;
+        playerInfo.attack = randomNum(1, 10) + playerInfo.extraDamage;
 
         enemies[pickRandomEnemy]['health'] =
           enemies[pickRandomEnemy]['health'] - playerInfo.attack;
